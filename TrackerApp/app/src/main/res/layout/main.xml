@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/linearLayout">
+
+        <ToggleButton
+            android:id="@+id/mood_bad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:checked="false"
+            android:onClick="onToggle"
+            android:text="Bad"
+            android:textOff="Bad"
+            android:textOn="Bad" />
+
+        <ToggleButton
+            android:id="@+id/mood_neutral"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:onClick="onToggle"
+            android:text="Neutral"
+            android:textOff="Neutral"
+            android:textOn="Neutral" />
+
+        <ToggleButton
+            android:id="@+id/mood_good"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:onClick="onToggle"
+            android:text="Good"
+            android:textOff="Good"
+            android:textOn="Good" />
+    </RadioGroup>
+
+
+    <android.widget.GridLayout
+        android:id="@+id/maingrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alignmentMode="alignBounds"
+        android:columnCount="3"
+        app:layout_constraintBottom_toTopOf="@+id/sendButton"
+        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="horizontal"
+        android:useDefaultMargins="true"
+        tools:ignore="NotSibling"></android.widget.GridLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="4dp">
+
+        <Button
+            android:id="@+id/createButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:onClick="createButtonClicked"
+            android:text="Create" />
+
+        <Button
+            android:id="@+id/commentaryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:onClick="commentaryButtonClicked"
+            android:text="Comment" />
+
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:text="Send Data" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
