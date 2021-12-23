@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
         this.layout = (GridLayout)findViewById(R.id.maingrid);
 
         Context context = this.getApplicationContext();
@@ -38,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         //REMOVE!!!!! implement threading instead
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        //createDebugButton("CreateYesterday");
 
         //create buttons with label and click count
         ArrayList<String> labels = persist.getLabels();
@@ -60,7 +61,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        persist.updateToday();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     /**
@@ -124,6 +129,28 @@ public class MainActivity extends AppCompatActivity {
                 button.setText(text + "\n" + String.valueOf(value));
             }
         });
+        layout.addView(button);
+    }
+
+    private void createDebugButton(String text){
+        Button button = new Button(this);
+        button.setText(text);
+
+        GridLayout.LayoutParams buttonParams = new GridLayout.LayoutParams();
+        buttonParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1.0f);
+        buttonParams.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1.0f);
+
+        buttonParams.setGravity(Gravity.FILL);
+        buttonParams.height = 250;
+
+        button.setLayoutParams(buttonParams);
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                persist.testByWritingOldDate();
+            }
+        });
+
         layout.addView(button);
     }
 

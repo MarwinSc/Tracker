@@ -2,7 +2,6 @@ package com.example.tracker;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,17 +22,12 @@ public class Persistence {
     private Context context;
     private ArrayList<String> labels;
     private ArrayList<Integer> values;
-    private Date today = new Date();
 
     public Persistence(Context context) {
         this.context = context;
         this.labels = new ArrayList<String>();
         this.values = new ArrayList<Integer>();
         init();
-    }
-
-    public void updateToday(){
-        today = new Date();
     }
 
     private void init() {
@@ -50,6 +44,42 @@ public class Persistence {
         }else{
             read();
         }
+    }
+
+    /**
+     * Reads all data from the disk.
+     * As a sideeffect compareDataAndCache is called.
+     * @return
+     */
+    private JSONArray read(){
+
+        JSONArray file = new JSONArray();
+
+        try {
+            StringBuilder plaintext = new StringBuilder();
+
+            FileReader fr = new FileReader(context.getFilesDir() + "/data.json");
+            int content;
+            while((content = fr.read())!=-1){
+                plaintext.append((char) content);
+            }
+
+            file = new JSONArray(plaintext.toString());
+
+            read_sideeffects(file);
+
+            file = compareDataAndCache(file);
+            return file;
+
+
+        } catch (IOException | JSONException e) {
+            Log.e("Exception","error in read(): "+ e.getMessage());
+        }
+        return null;
+    }
+    private void read_sideeffects(JSONArray file){
+        this.labels = setLatestLabels(file);
+        this.values = setLatestValues(file);
     }
 
     /**
@@ -85,8 +115,8 @@ public class Persistence {
         fetchedData.put(setUpDay());
         writeToFile(fetchedData.toString(), this.context);
         for (String s : labels) {
-            //TODO unnecessary IO here with all the reading and writing... remove
-            addHabit(s, 0);
+            //TODO unnecessary IO here by calling read() in for loop... remove
+            fetchedData = addHabit(s, 0);
         }
         return fetchedData;
     }
@@ -96,7 +126,7 @@ public class Persistence {
      * @param fetchedData
      * @return
      */
-    private ArrayList<String> setLabelsFromLatestDay(JSONArray fetchedData){
+    private ArrayList<String> setLatestLabels(JSONArray fetchedData){
         ArrayList<String> labels = new ArrayList<String>();
         try {
             JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-1).getJSONObject("data");
@@ -115,7 +145,7 @@ public class Persistence {
     /**
      * Retrieves the values of the latest day in the given data.
      */
-    private ArrayList<Integer> setCurrentValues(JSONArray fetchedData){
+    private ArrayList<Integer> setLatestValues(JSONArray fetchedData){
         ArrayList<Integer> values = new ArrayList<Integer>();
         try {
             JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-1).getJSONObject("data");
@@ -137,6 +167,7 @@ public class Persistence {
      */
     private JSONObject setUpDay(){
         JSONObject day = new JSONObject();
+        Date today = new Date();
         try {
             day.put("date", new SimpleDateFormat("dd-MM-yyyy").format(today));
             JSONObject data = new JSONObject();
@@ -147,41 +178,6 @@ public class Persistence {
             Log.e("Exception","error in setUpDay: " + e.getMessage());
         }
         return day;
-    }
-
-    /**
-     * Reads all data from the disk.
-     * As a sideeffect compareDataAndCache is called.
-     * @return
-     */
-    private JSONArray read(){
-
-        JSONArray file = new JSONArray();
-
-        try {
-            StringBuilder plaintext = new StringBuilder();
-
-            FileReader fr = new FileReader(context.getFilesDir() + "/data.json");
-            int content;
-            while((content = fr.read())!=-1){
-                plaintext.append((char) content);
-            }
-
-            file = new JSONArray(plaintext.toString());
-
-            read_sideeffects(file);
-
-            file = compareDataAndCache(file);
-
-        } catch (IOException | JSONException e) {
-            Log.e("Exception","error in read(): "+ e.getMessage());
-        }
-        return file;
-    }
-
-    private void read_sideeffects(JSONArray file){
-        this.labels = setLabelsFromLatestDay(file);
-        this.values = setCurrentValues(file);
     }
 
     /**
@@ -208,11 +204,15 @@ public class Persistence {
     /**
      * Writes a data.json file containing an old date.
      */
-    private void testByWritingOldDate(){
+    public void testByWritingOldDate(){
+
+        Util.deleteRecursive(context.getFilesDir());
+
         JSONArray testData = new JSONArray();
         JSONObject day = new JSONObject();
+        Date yesterday = new Date(System.currentTimeMillis()-24*60*60*1000);
         try {
-            day.put("date", "29-9-2021");
+            day.put("date", new SimpleDateFormat("dd-MM-yyyy").format(yesterday));
             JSONObject data = new JSONObject();
             data.put("Meal",42);
             day.put("data", data);
@@ -231,7 +231,8 @@ public class Persistence {
      */
     public int incrementFeature(String feature){
         JSONArray file = read();
-        Integer value;
+        int value;
+        Date today = new Date();
         try {
             JSONObject day = file.getJSONObject(file.length()-1);
             JSONObject data = (JSONObject) day.get("data");
@@ -247,15 +248,15 @@ public class Persistence {
             return value+1;
         } catch (JSONException e) {
             Log.e("Exception","error in increment(): " + e.getMessage());
+            return -1;
         }
-        return -1;
     }
 
     /**
-     * Add a Habit to both the current cached day and the written file;
+     * Add a Habit to the written file;
      * @param habitName
      */
-    public void addHabit(String habitName, int value){
+    public JSONArray addHabit(String habitName, int value){
 
         JSONArray file = read();
 
@@ -271,8 +272,11 @@ public class Persistence {
             time.put(habitName,times);
 
             writeToFile(file.toString(), this.context);
+            return file;
+
         } catch (JSONException e) {
             Log.e("Exception","error in adding Habit: " + e.getMessage());
+            return null;
         }
     }
 
