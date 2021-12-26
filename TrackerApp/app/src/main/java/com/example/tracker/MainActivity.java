@@ -3,6 +3,8 @@ package com.example.tracker;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.StrictMode;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -30,6 +33,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main);
         this.layout = (GridLayout)findViewById(R.id.maingrid);
 
+        //swipe to previous day
+        findViewById(R.id.main_content).setOnTouchListener(new OnSwipeTouchListener(MainActivity.this) {
+            public void onSwipeRight() {
+                Intent intent = new Intent(MainActivity.this, PreviousDayActivity.class);
+                startActivity(intent);
+            }
+        });
+
         Context context = this.getApplicationContext();
         this.persist = new Persistence(context);
         final Client client = new Client(context.getFilesDir());
@@ -41,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         //createDebugButton("CreateYesterday");
 
         //create buttons with label and click count
-        ArrayList<String> labels = persist.getLabels();
-        ArrayList<Integer> values = persist.getValues();
+        ArrayList<String> labels = persist.getLabels(1);
+        ArrayList<Integer> values = persist.getValues(1);
         for(int i = 0; i < labels.size(); i++){
             if (!labels.get(i).equals("Mood")) { //ignore Mood or other categorical values
                 createButton(persist, labels.get(i), values.get(i));
@@ -56,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
                 client.send();
             }
         });
+
+        //register broadcast to track last unlocking of phone as long as app is in background
+        UserPresentBroadcastReceiver upbr = new UserPresentBroadcastReceiver(persist);
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        this.registerReceiver(upbr, filter);
     }
 
     @Override
@@ -125,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int value = persist.incrementFeature(text);
+                int value = persist.incrementFeature(text,1);
                 button.setText(text + "\n" + String.valueOf(value));
             }
         });

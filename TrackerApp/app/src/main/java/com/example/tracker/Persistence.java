@@ -65,12 +65,9 @@ public class Persistence {
             }
 
             file = new JSONArray(plaintext.toString());
-
             read_sideeffects(file);
-
             file = compareDataAndCache(file);
             return file;
-
 
         } catch (IOException | JSONException e) {
             Log.e("Exception","error in read(): "+ e.getMessage());
@@ -78,8 +75,8 @@ public class Persistence {
         return null;
     }
     private void read_sideeffects(JSONArray file){
-        this.labels = setLatestLabels(file);
-        this.values = setLatestValues(file);
+        this.labels = getLatestLabels(file,1);
+        this.values = getLatestValues(file,1);
     }
 
     /**
@@ -126,10 +123,10 @@ public class Persistence {
      * @param fetchedData
      * @return
      */
-    private ArrayList<String> setLatestLabels(JSONArray fetchedData){
+    private ArrayList<String> getLatestLabels(JSONArray fetchedData, int day_offset){
         ArrayList<String> labels = new ArrayList<String>();
         try {
-            JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-1).getJSONObject("data");
+            JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-day_offset).getJSONObject("data");
             for(int i = 0; i < dataLastDay.names().length(); i++){
                 String habitName = dataLastDay.names().getString(i);
                 labels.add(habitName);
@@ -145,10 +142,10 @@ public class Persistence {
     /**
      * Retrieves the values of the latest day in the given data.
      */
-    private ArrayList<Integer> setLatestValues(JSONArray fetchedData){
+    private ArrayList<Integer> getLatestValues(JSONArray fetchedData, int day_offset){
         ArrayList<Integer> values = new ArrayList<Integer>();
         try {
-            JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-1).getJSONObject("data");
+            JSONObject dataLastDay = fetchedData.getJSONObject(fetchedData.length()-day_offset).getJSONObject("data");
             for(int i = 0; i < dataLastDay.names().length(); i++){
                 int habitValue = dataLastDay.getInt(dataLastDay.names().getString(i));
                 values.add(habitValue);
@@ -216,11 +213,14 @@ public class Persistence {
             JSONObject data = new JSONObject();
             data.put("Meal",42);
             day.put("data", data);
+            JSONArray times = new JSONArray();
+            times.put("12:00:00");
             JSONObject time = new JSONObject();
+            time.put("Meal",times);
             day.put("time", time);
             testData.put(day);
         } catch (JSONException e) {
-            Log.e("Exception","error in setUpDay: " + e.getMessage());
+            Log.e("Exception","error in test: " + e.getMessage());
         }
         writeToFile(testData.toString(),context);
     }
@@ -228,23 +228,29 @@ public class Persistence {
     /**
      * Reads the file from disk increments the
      * @param feature
+     * @param day_offset the day to use, 1 is today, 2 yesterday ...
      */
-    public int incrementFeature(String feature){
+    public int incrementFeature(String feature, int day_offset){
         JSONArray file = read();
         int value;
         Date today = new Date();
         try {
-            JSONObject day = file.getJSONObject(file.length()-1);
+            JSONObject day = file.getJSONObject(file.length()-day_offset);
             JSONObject data = (JSONObject) day.get("data");
             value = (int) data.get(feature);
             data.put(feature,value+1);
             //add click time
-            JSONObject time = (JSONObject) day.get("time");
-            JSONArray times = (JSONArray) time.get(feature);
-            times.put(new SimpleDateFormat("HH:mm:ss").format(today));
-
+            if (day_offset < 2) {
+                JSONObject time = (JSONObject) day.get("time");
+                JSONArray times = (JSONArray) time.get(feature);
+                times.put(new SimpleDateFormat("HH:mm:ss").format(today));
+            }else{
+                //if incrementing for previous day
+                JSONObject time = (JSONObject) day.get("time");
+                JSONArray times = (JSONArray) time.get(feature);
+                times.put("23:59:00");
+            }
             writeToFile(file.toString(), this.context);
-
             return value+1;
         } catch (JSONException e) {
             Log.e("Exception","error in increment(): " + e.getMessage());
@@ -280,13 +286,19 @@ public class Persistence {
         }
     }
 
-    public ArrayList<String> getLabels(){
-        read();
+    public ArrayList<String> getLabels(int day_offset){
+        JSONArray file = read();
+        if (day_offset > 1){
+            return getLatestLabels(file,day_offset);
+        }
         return this.labels;
     }
 
-    public ArrayList<Integer> getValues(){
-        read();
+    public ArrayList<Integer> getValues(int day_offset){
+        JSONArray file = read();
+        if (day_offset > 1){
+            return getLatestValues(file,day_offset);
+        }
         return this.values;
     }
 
@@ -327,7 +339,27 @@ public class Persistence {
 
             writeToFile(file.toString(), this.context);
         } catch (JSONException e) {
-            Log.e("Exception","error in adding comment: " + e.getMessage());
+            Log.e("Exception","error in set mood: " + e.getMessage());
+        }
+    }
+
+    public void addPhoneUnlockTime(){
+        JSONArray file = read();
+        try {
+            Date today = new Date();
+            JSONObject day = file.getJSONObject(file.length()-1);
+            JSONObject time = (JSONObject) day.get("time");
+            if (!time.has("Unlock")) {
+                JSONArray times = new JSONArray();
+                times.put(new SimpleDateFormat("HH:mm:ss").format(today));
+                time.put("Unlock",times);
+            }else{
+                JSONArray times = (JSONArray) time.get("Unlock");
+                times.put(new SimpleDateFormat("HH:mm:ss").format(today));
+            }
+            writeToFile(file.toString(), this.context);
+        } catch (JSONException e) {
+            Log.e("Exception","error in writing unlock time: " + e.getMessage());
         }
     }
 }

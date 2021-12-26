@@ -24,6 +24,11 @@
         </activity>
 
         <activity
+            android:name=".PreviousDayActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <activity
             android:name=".CreateActivity"
             android:screenOrientation="portrait">
         </activity>
@@ -32,6 +37,15 @@
             android:name=".CommentaryActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <receiver
+            android:name=".UserPresentBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

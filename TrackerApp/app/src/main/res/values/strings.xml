@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tracker</string>
+    <string name="comment">Comment</string>
+    <string name="good">Good</string>
+    <string name="neutral">Neutral</string>
+    <string name="bad">Bad</string>
 </resources>

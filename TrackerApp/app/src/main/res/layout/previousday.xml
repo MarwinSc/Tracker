@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_content"
+    android:id="@+id/previousDay_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,10 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@id/linearLayout">
+        app:layout_constraintBottom_toTopOf="@id/previousDay_linearLayout">
 
         <ToggleButton
-            android:id="@+id/mood_bad"
+            android:id="@+id/previousDay_mood_bad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -21,81 +21,66 @@
             android:layout_weight="1"
             android:checked="false"
             android:onClick="onToggle"
-            android:text="Bad"
-            android:textOff="Bad"
-            android:textOn="Bad" />
+            android:text="@string/bad"
+            android:textOff="@string/bad"
+            android:textOn="@string/bad" />
 
         <ToggleButton
-            android:id="@+id/mood_neutral"
+            android:id="@+id/previousDay_mood_neutral"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:onClick="onToggle"
-            android:text="Neutral"
-            android:textOff="Neutral"
-            android:textOn="Neutral" />
+            android:text="@string/neutral"
+            android:textOff="@string/neutral"
+            android:textOn="@string/neutral" />
 
         <ToggleButton
-            android:id="@+id/mood_good"
+            android:id="@+id/previousDay_mood_good"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:onClick="onToggle"
-            android:text="Good"
-            android:textOff="Good"
-            android:textOn="Good" />
+            android:text="@string/good"
+            android:textOff="@string/good"
+            android:textOn="@string/good" />
     </RadioGroup>
 
 
     <android.widget.GridLayout
-        android:id="@+id/maingrid"
+        android:id="@+id/previousDay_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alignmentMode="alignBounds"
         android:columnCount="3"
         android:orientation="horizontal"
         android:useDefaultMargins="true"
-        app:layout_constraintBottom_toTopOf="@+id/sendButton"
+        app:layout_constraintBottom_toTopOf="@+id/previousDay_commentaryButton"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="NotSibling"></android.widget.GridLayout>
+        tools:ignore="NotSibling" />
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/previousDay_linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="4dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/createButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:onClick="createButtonClicked"
-            android:text="Create" />
-
-        <Button
-            android:id="@+id/commentaryButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/previousDay_commentaryButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:onClick="commentaryButtonClicked"
-            android:text="Comment" />
+            android:text="@string/comment" />
 
-        <Button
-            android:id="@+id/sendButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="1"
-            android:text="Send Data" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

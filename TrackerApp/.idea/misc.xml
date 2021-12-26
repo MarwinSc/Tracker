@@ -4,8 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/marwi/OneDrive/Documents/1A_MACHEN/Dev/Tracker/TrackerApp/app/src/main/res/layout/activity_main.xml" value="0.20969202898550723" />
+        <entry key="..\:/Users/marwi/OneDrive/Documents/1A_MACHEN/Dev/Tracker/TrackerApp/app/src/main/res/layout/commentary.xml" value="0.3804347826086957" />
         <entry key="..\:/Users/marwi/OneDrive/Documents/1A_MACHEN/Dev/Tracker/TrackerApp/app/src/main/res/layout/create.xml" value="0.20969202898550723" />
         <entry key="..\:/Users/marwi/OneDrive/Documents/1A_MACHEN/Dev/Tracker/TrackerApp/app/src/main/res/layout/main.xml" value="0.20969202898550723" />
+        <entry key="..\:/Users/marwi/OneDrive/Documents/1A_MACHEN/Dev/Tracker/TrackerApp/app/src/main/res/layout/previousDay.xml" value="0.375" />
       </map>
     </option>
   </component>
